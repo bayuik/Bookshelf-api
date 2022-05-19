@@ -9,11 +9,7 @@ const createBook = (request, h) => {
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
   let finished;
-  if (pageCount === readPage) {
-    finished = true;
-  } else {
-    finished = false;
-  }
+  pageCount === readPage ? finished = true : finished = false;
   const newBook = {
     id,
     name,
@@ -29,26 +25,26 @@ const createBook = (request, h) => {
     updatedAt,
   };
 
-  books.push(newBook);
-
-  const isSuccess = books.filter((book) => book.id === id).length > 0;
-  let response;
   if (name === '' || name === undefined || name === null) {
-    response = h
+    return h
       .response({
         status: 'fail',
         message: 'Gagal menambahkan buku. Mohon isi nama buku',
       })
       .code(400);
   } else if (readPage > pageCount) {
-    response = h
+    return h
       .response({
         status: 'fail',
         message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
       })
       .code(400);
-  } else if (isSuccess) {
-    response = h
+  }
+
+  books.push(newBook);
+  const isSuccess = books.filter((book) => book.id === id).length > 0;
+  if (isSuccess) {
+    return h
       .response({
         status: 'success',
         message: 'Buku berhasil ditambahkan',
@@ -58,20 +54,17 @@ const createBook = (request, h) => {
       })
       .code(201);
   } else {
-    response = h
+    return h
       .response({
         status: 'error',
         message: 'Buku gagal ditambahkan',
       })
       .code(500);
   }
-
-  return response;
 };
 
 const getAllBooks = () => {
   const data = books.map(({ id, name, publisher }) => ({ id, name, publisher }));
-
   return data;
 };
 
@@ -113,7 +106,6 @@ const getBooksByFinished = (value) => {
 
 const getBooksByName = (value) => {
   const result = books.filter((book) => book.name === value.toLowerCase());
-
   return result;
 };
 
@@ -159,10 +151,11 @@ const getBookById = (request, h) => {
     })
     .code(404);
 };
+
 const updateBookById = (request, h) => {
   const { bookId } = request.params;
   const {
-    name, year, author, publisher, pageCount, readPage, reading,
+    name, year, author, summary, publisher, pageCount, readPage, reading,
   } = request.payload;
   const updatedAt = new Date().toISOString();
 
@@ -195,6 +188,7 @@ const updateBookById = (request, h) => {
       name,
       year,
       author,
+      summary,
       publisher,
       pageCount,
       readPage,
