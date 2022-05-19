@@ -9,7 +9,11 @@ const createBook = (request, h) => {
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
   let finished;
-  pageCount === readPage ? finished = true : finished = false;
+  if (pageCount === readPage) {
+    finished = true;
+  } else {
+    finished = false;
+  }
   const newBook = {
     id,
     name,
@@ -32,7 +36,9 @@ const createBook = (request, h) => {
         message: 'Gagal menambahkan buku. Mohon isi nama buku',
       })
       .code(400);
-  } else if (readPage > pageCount) {
+  }
+
+  if (readPage > pageCount) {
     return h
       .response({
         status: 'fail',
@@ -53,14 +59,12 @@ const createBook = (request, h) => {
         },
       })
       .code(201);
-  } else {
-    return h
-      .response({
-        status: 'error',
-        message: 'Buku gagal ditambahkan',
-      })
-      .code(500);
   }
+
+  return h.response({
+    status: 'error',
+    message: 'Buku gagal ditambahkan',
+  }).code(500);
 };
 
 const getAllBooks = () => {
