@@ -3,7 +3,7 @@ const books = require('./books');
 
 const createBook = (request, h) => {
   const {
-    name, year, author, summary, publisher, pageCount, readPage, reading
+    name, year, author, summary, publisher, pageCount, readPage, reading,
   } = request.payload;
   const id = nanoid(16);
   const insertedAt = new Date().toISOString();
@@ -33,7 +33,7 @@ const createBook = (request, h) => {
 
   const isSuccess = books.filter((book) => book.id === id).length > 0;
   let response;
-  if (name === '' || name === undefined) {
+  if (name === '' || name === undefined || name === null) {
     response = h
       .response({
         status: 'fail',
@@ -112,7 +112,7 @@ const getBooksByFinished = (value) => {
 };
 
 const getBooksByName = (value) => {
-  const result = books.filter((book) => book.name === value);
+  const result = books.filter((book) => book.name === value.toLowerCase());
 
   return result;
 };
@@ -162,7 +162,7 @@ const getBookById = (request, h) => {
 const updateBookById = (request, h) => {
   const { bookId } = request.params;
   const {
-    name, year, author, publisher, pageCount, readPage, reading
+    name, year, author, publisher, pageCount, readPage, reading,
   } = request.payload;
   const updatedAt = new Date().toISOString();
 
